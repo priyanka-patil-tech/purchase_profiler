@@ -1,0 +1,344 @@
+{
+  "version": "1.1.0",
+  "extractedAt": "2026-10-25T10:00:00.000Z",
+  "warehouseReceipts": [
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "In-Warehouse",
+      "documentType": "receipt",
+      "documentSubType": "warehouse",
+      "transactionDateTime": "2026-05-12T14:22:00",
+      "transactionDate": "2026-05-12",
+      "transactionBarcode": "A1234B5678C9012D",
+      "transactionType": "Sale",
+      "total": 135.5,
+      "totalItemCount": 3,
+      "itemArray": [
+        {
+          "itemNumber": "112218",
+          "itemDescription01": "HAAGEN DAZS",
+          "amount": 13.99,
+          "unit": 1
+        },
+        {
+          "itemNumber": "/  112218",
+          "itemDescription01": "/ REBATE",
+          "amount": -3.5,
+          "unit": -1
+        },
+        {
+          "itemNumber": "556677",
+          "itemDescription01": "ORGANIC MILK",
+          "amount": 125.01,
+          "unit": 1
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "AMEX",
+          "tenderDescription": "AMERICAN EXPRESS",
+          "amountTender": 135.5
+        }
+      ],
+      "couponArray": [
+        {
+          "upcnumberCoupon": "00000112218"
+        }
+      ]
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "Gas Station",
+      "documentType": "receipt",
+      "documentSubType": "gas",
+      "transactionDateTime": "2026-05-19T08:14:00",
+      "transactionDate": "2026-05-19",
+      "transactionBarcode": "G5555B6666C7777D",
+      "transactionType": "Sale",
+      "total": 45.2,
+      "totalItemCount": 1,
+      "itemArray": [
+        {
+          "itemNumber": "800599",
+          "itemDescription01": "REGULAR GAS",
+          "amount": 45.2,
+          "unit": 1,
+          "fuelUnitQuantity": 11.331,
+          "itemUnitPriceAmount": 3.989
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "VISA",
+          "tenderDescription": "COSTCO VISA",
+          "amountTender": 45.2
+        }
+      ],
+      "couponArray": []
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "In-Warehouse",
+      "documentType": "receipt",
+      "documentSubType": "warehouse",
+      "transactionDateTime": "2026-06-04T18:45:00",
+      "transactionDate": "2026-06-04",
+      "transactionBarcode": "B2234B5678C9012E",
+      "transactionType": "Sale",
+      "total": 240.75,
+      "totalItemCount": 2,
+      "itemArray": [
+        {
+          "itemNumber": "999111",
+          "itemDescription01": "KIRKLAND TOWELS",
+          "amount": 20.75,
+          "unit": 1
+        },
+        {
+          "itemNumber": "888222",
+          "itemDescription01": "CHOICE RIBEYE",
+          "amount": 220.0,
+          "unit": 1
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "AMEX",
+          "tenderDescription": "AMERICAN EXPRESS",
+          "amountTender": 240.75
+        }
+      ],
+      "couponArray": []
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "Gas Station",
+      "documentType": "receipt",
+      "documentSubType": "gas",
+      "transactionDateTime": "2026-06-22T11:30:00",
+      "transactionDate": "2026-06-22",
+      "transactionBarcode": "G8888B9999C0000E",
+      "transactionType": "Sale",
+      "total": 52.4,
+      "totalItemCount": 1,
+      "itemArray": [
+        {
+          "itemNumber": "800599",
+          "itemDescription01": "REGULAR GAS",
+          "amount": 52.4,
+          "unit": 1,
+          "fuelUnitQuantity": 12.812,
+          "itemUnitPriceAmount": 4.089
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "VISA",
+          "tenderDescription": "COSTCO VISA",
+          "amountTender": 52.4
+        }
+      ],
+      "couponArray": []
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "In-Warehouse",
+      "documentType": "receipt",
+      "documentSubType": "warehouse",
+      "transactionDateTime": "2026-07-15T12:10:00",
+      "transactionDate": "2026-07-15",
+      "transactionBarcode": "C3234B5678C9012F",
+      "transactionType": "Sale",
+      "total": 310.2,
+      "totalItemCount": 2,
+      "itemArray": [
+        {
+          "itemNumber": "444555",
+          "itemDescription01": "APPLE IPAD",
+          "amount": 299.99,
+          "unit": 1
+        },
+        {
+          "itemNumber": "556677",
+          "itemDescription01": "ORGANIC MILK",
+          "amount": 10.21,
+          "unit": 1
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "VISA",
+          "tenderDescription": "COSTCO VISA",
+          "amountTender": 310.2
+        }
+      ],
+      "couponArray": []
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "Car Wash",
+      "documentType": "receipt",
+      "documentSubType": "carwash",
+      "transactionDateTime": "2026-07-15T12:25:00",
+      "transactionDate": "2026-07-15",
+      "transactionBarcode": "W1111B2222C3333F",
+      "transactionType": "Sale",
+      "total": 9.0,
+      "totalItemCount": 1,
+      "itemArray": [
+        {
+          "itemNumber": "777777",
+          "itemDescription01": "PREMIUM WASH",
+          "amount": 9.0,
+          "unit": 1
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "VISA",
+          "tenderDescription": "COSTCO VISA",
+          "amountTender": 9.0
+        }
+      ],
+      "couponArray": []
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "Gas Station",
+      "documentType": "receipt",
+      "documentSubType": "gas",
+      "transactionDateTime": "2026-08-05T17:40:00",
+      "transactionDate": "2026-08-05",
+      "transactionBarcode": "G1111B2222C3333G",
+      "transactionType": "Sale",
+      "total": 48.9,
+      "totalItemCount": 1,
+      "itemArray": [
+        {
+          "itemNumber": "800599",
+          "itemDescription01": "REGULAR GAS",
+          "amount": 48.9,
+          "unit": 1,
+          "fuelUnitQuantity": 12.256,
+          "itemUnitPriceAmount": 3.989
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "VISA",
+          "tenderDescription": "COSTCO VISA",
+          "amountTender": 48.9
+        }
+      ],
+      "couponArray": []
+    },
+    {
+      "membershipNumber": "999999******1234",
+      "warehouseName": "Redmond",
+      "receiptType": "In-Warehouse",
+      "documentType": "receipt",
+      "documentSubType": "warehouse",
+      "transactionDateTime": "2026-08-18T10:15:00",
+      "transactionDate": "2026-08-18",
+      "transactionBarcode": "D4234B5678C9012G",
+      "transactionType": "Sale",
+      "total": 115.0,
+      "totalItemCount": 2,
+      "itemArray": [
+        {
+          "itemNumber": "223344",
+          "itemDescription01": "KIRKLAND WATER",
+          "amount": 4.5,
+          "unit": 1
+        },
+        {
+          "itemNumber": "115599",
+          "itemDescription01": "LAUNDRY DETERG",
+          "amount": 22.5,
+          "unit": 1
+        },
+        {
+          "itemNumber": "/  115599",
+          "itemDescription01": "/ REBATE",
+          "amount": -4.0,
+          "unit": -1
+        },
+        {
+          "itemNumber": "778899",
+          "itemDescription01": "COFFEE BEANS",
+          "amount": 92.0,
+          "unit": 4
+        }
+      ],
+      "tenderArray": [
+        {
+          "tenderTypeCode": "AMEX",
+          "tenderDescription": "AMERICAN EXPRESS",
+          "amountTender": 115.0
+        }
+      ],
+      "couponArray": [
+        {
+          "upcnumberCoupon": "00000115599"
+        }
+      ]
+    }
+  ],
+  "onlineOrders": [
+    {
+      "orderHeaderId": "44556677",
+      "orderPlacedDate": "2026-06-15T09:30:00.000Z",
+      "orderNumber": "ON-999888777",
+      "orderTotal": 89.99,
+      "warehouseNumber": "847",
+      "status": "Shipped",
+      "emailAddress": "member@example.com",
+      "orderLineItems": [
+        {
+          "orderLineItemId": "LI-001",
+          "itemId": "665544",
+          "itemNumber": "665544",
+          "itemTypeId": "Merchandise",
+          "lineNumber": 1,
+          "itemDescription": "OFFICE CHAIR MAT",
+          "deliveryDate": "2026-06-18",
+          "warehouseNumber": "847",
+          "status": "Delivered",
+          "orderStatus": "Completed",
+          "parentOrderLineItemId": null
+        }
+      ]
+    },
+    {
+      "orderHeaderId": "44556678",
+      "orderPlacedDate": "2026-08-22T14:10:00.000Z",
+      "orderNumber": "ON-999888778",
+      "orderTotal": 159.5,
+      "warehouseNumber": "847",
+      "status": "Shipped",
+      "emailAddress": "member@example.com",
+      "orderLineItems": [
+        {
+          "orderLineItemId": "LI-002",
+          "itemId": "112233",
+          "itemNumber": "112233",
+          "itemTypeId": "Merchandise",
+          "lineNumber": 1,
+          "itemDescription": "WEATHERPROOF JACKET",
+          "deliveryDate": "2026-08-25",
+          "warehouseNumber": "847",
+          "status": "Delivered",
+          "orderStatus": "Completed",
+          "parentOrderLineItemId": null
+        }
+      ]
+    }
+  ]
+}

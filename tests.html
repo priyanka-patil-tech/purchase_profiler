@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Costco Engine Unit Test Runner</title>
+    <!-- Jasmine Testing Framework CDN Dependencies -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.1.1/jasmine.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.1.1/jasmine.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.1.1/jasmine-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.1.1/boot0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/5.1.1/boot1.min.js"></script>
+</head>
+<body>
+
+<script>
+    /* ==========================================================================
+       TARGET EMULATED SOURCE CODE UNITS UNDER TEST (O(N) Refactored Methods)
+       ========================================================================== */
+    let globalReceiptsList = [];
+    let currentFilterMode = 'all';
+    let globalValidProducts = new Set();
+
+    function normalizeReceipt(receipt) {
+        const isOnline = 'orderTotal' in receipt;
+        return {
+            isOnline: isOnline,
+            total: parseFloat(isOnline ? receipt.orderTotal : (receipt.total || 0)),
+            type: isOnline ? 'Online' : (receipt.receiptType || 'In-Warehouse'),
+            dateStr: isOnline ? (receipt.orderPlacedDate || '').substring(0, 10) : (receipt.transactionDate || ''),
+            monthBucket: isOnline ? (receipt.orderPlacedDate || '').substring(0, 7) : (receipt.transactionDate || '').substring(0, 7),
+            accountId: receipt.membershipNumber || (receipt.emailAddress ? 'Online (' + receipt.emailAddress.split('@')[0] + ')' : 'Unknown'),
+            itemsList: isOnline ? (receipt.orderLineItems || []) : (receipt.itemArray || [])
+        };
+    }
+
+    function calculateGlobalKPIs() {
+        let totalSpent = 0, whSpent = 0, onlineSpent = 0, gasSpent = 0, cwSpent = 0;
+        let netItemQuantity = 0, cumulativeFuelVolume = 0;
+        let uniqueItemsSet = new Set();
+
+        globalValidProducts.clear();
+
+        globalReceiptsList.forEach(rawReceipt => {
+            const norm = normalizeReceipt(rawReceipt);
+            totalSpent += norm.total;
+            
+            if (norm.type === 'In-Warehouse') whSpent += norm.total;
+            else if (norm.type === 'Online') onlineSpent += norm.total;
+            else if (norm.type === 'Gas Station') gasSpent += norm.total;
+            else if (norm.type === 'Car Wash') cwSpent += norm.total;
+
+            if (norm.itemsList.length > 0) {
+                norm.itemsList.forEach(item => {
+                    const itemNum = item.itemNumber ? item.itemNumber.trim() : '';
+                    if (!itemNum) return;
+
+                    if (!norm.isOnline && parseFloat(item.amount || 0) > 0) {
+                        globalValidProducts.add(itemNum);
+                    }
+
+                    if (norm.isOnline) {
+                        netItemQuantity += 1;
+                        uniqueItemsSet.add(itemNum);
+                    } else {
+                        const qty = parseInt(item.unit || 0);
+                        const amt = parseFloat(item.amount || 0);
+
+                        if (norm.type === 'Gas Station' && item.fuelUnitQuantity) {
+                            cumulativeFuelVolume += parseFloat(item.fuelUnitQuantity || 0);
+                        }
+
+                        if (!itemNum.startsWith('/')) {
+                            if ((qty > 0 && amt > 0) || (qty < 0 && amt < 0)) {
+                                netItemQuantity += qty; 
+                                uniqueItemsSet.add(itemNum);
+                            }
+                        }
+                    }
+                });
+            } else {
+                netItemQuantity += 1;
+            }
+        });
+
+        return { totalSpent, whSpent, onlineSpent, gasSpent, cwSpent, netItemQuantity, cumulativeFuelVolume, uniqueItemsCount: uniqueItemsSet.size };
+    }
+
+    function processProductsAndFuel(filterMode) {
+        let productMap = {};
+        let rawFuelFillupList = [];
+
+        globalReceiptsList.forEach(rawReceipt => {
+            const norm = normalizeReceipt(rawReceipt);
+            if (filterMode !== 'all' && norm.type !== filterMode) return;
+
+            if (norm.itemsList.length > 0) {
+                let localItems = [];
+                let lastValidItem = null;
+
+                norm.itemsList.forEach(item => {
+                    const itemNum = item.itemNumber ? item.itemNumber.trim() : 'UNKNOWN';
+                    
+                    if (norm.isOnline) {
+                        localItems.push({
+                            number: itemNum,
+                            desc: item.itemDescription ? item.itemDescription.trim() : 'Online Product',
+                            qty: 1,
+                            amount: norm.total / norm.itemsList.length
+                        });
+                    } else {
+                        const amount = parseFloat(item.amount || 0);
+                        const qty = parseInt(item.unit || 0);
+                        const desc = item.itemDescription01 ? item.itemDescription01.trim() : '';
+                        const isCouponLine = itemNum.startsWith('/') || desc.startsWith('/') || (amount < 0 && !globalValidProducts.has(itemNum));
+
+                        if (isCouponLine) {
+                            if (lastValidItem) lastValidItem.amount += amount; 
+                            else if (localItems.length > 0) localItems[localItems.length - 1].amount += amount;
+                        } else if (item.itemDescription01) {
+                            let newItem = { 
+                                number: itemNum, desc: desc, qty: qty, amount: amount,
+                                fuelQty: item.fuelUnitQuantity ? parseFloat(item.fuelUnitQuantity) : null,
+                                fuelPrice: item.itemUnitPriceAmount ? parseFloat(item.itemUnitPriceAmount) : null
+                            };
+                            localItems.push(newItem);
+                            if (amount > 0) lastValidItem = newItem;
+                        }
+                    }
+                });
+
+                localItems.forEach(item => {
+                    if (norm.type === 'Gas Station' && item.fuelQty) {
+                        rawFuelFillupList.push({ date: norm.dateStr, volume: item.fuelQty, cost: item.amount });
+                    }
+                    if (!productMap[item.number]) {
+                        productMap[item.number] = { number: item.number, count: 0, totalSpent: 0 };
+                    }
+                    productMap[item.number].count += item.qty;
+                    productMap[item.number].totalSpent += item.amount;
+                });
+            }
+        });
+
+        return { products: Object.values(productMap), fuelLogs: rawFuelFillupList };
+    }
+
+    /* ==========================================================================
+       JASMINE TEST SUITE CONTRACT SPECIFICATIONS
+       ========================================================================== */
+    describe("Costco Dashboard Data Engine Suite", function() {
+
+        beforeEach(function() {
+            globalReceiptsList = [];
+            globalValidProducts.clear();
+            currentFilterMode = 'all';
+        });
+
+        it("should accurately distinguish Online Orders from In-Warehouse Receipts during Normalization", function() {
+            const rawWarehouse = { membershipNumber: "12345", warehouseName: "Redmond", receiptType: "In-Warehouse", total: 45.50, transactionBarcode: "XYZ123" };
+            const rawOnline = { orderHeaderId: "999", orderPlacedDate: "2026-10-25", orderNumber: "ON-777", orderTotal: 120.00, orderLineItems: [] };
+
+            const normWh = normalizeReceipt(rawWarehouse);
+            const normOn = normalizeReceipt(rawOnline);
+
+            expect(normWh.isOnline).toBe(false);
+            expect(normWh.total).toBe(45.50);
+            expect(normWh.type).toBe("In-Warehouse");
+
+            expect(normOn.isOnline).toBe(true);
+            expect(normOn.total).toBe(120.00);
+            expect(normOn.type).toBe("Online");
+        });
+
+        it("should successfully calculate global financial totals across multiple spending channels", function() {
+            globalReceiptsList = [
+                { total: 100.00, receiptType: "In-Warehouse", itemArray: [{ itemNumber: "555", amount: 100.00, unit: 1 }] },
+                { total: 50.00, receiptType: "Gas Station", itemArray: [{ itemNumber: "800", amount: 50.00, unit: 1, fuelUnitQuantity: 10.0 }] },
+                { orderTotal: 200.00, orderLineItems: [{ itemNumber: "999", itemDescription: "Item" }] }
+            ];
+
+            const kpis = calculateGlobalKPIs();
+
+            expect(kpis.totalSpent).toBe(350.00);
+            expect(kpis.whSpent).toBe(100.00);
+            expect(kpis.gasSpent).toBe(50.00);
+            expect(kpis.onlineSpent).toBe(200.00);
+            expect(kpis.cumulativeFuelVolume).toBe(10.0);
+        });
+
+        it("should offset positive product balances when encountering downstream manufacturer coupon lines", function() {
+            globalReceiptsList = [{
+                total: 10.49,
+                receiptType: "In-Warehouse",
+                transactionDate: "2026-10-25",
+                itemArray: [
+                    { itemNumber: "112218", itemDescription01: "HAAGEN DAZS", amount: 13.99, unit: 1 },
+                    { itemNumber: "/  112218", itemDescription01: "/ REBATE", amount: -3.50, unit: -1 }
+                ]
+            }];
+
+            calculateGlobalKPIs();
+            expect(globalValidProducts.has("112218")).toBe(true);
+
+            const parsedData = processProductsAndFuel("all");
+            const targetProduct = parsedData.products.find(p => p.number === "112218");
+
+            expect(targetProduct).toBeDefined();
+            expect(targetProduct.count).toBe(1);
+            expect(targetProduct.totalSpent).toBe(10.49);
+        });
+
+        it("should extract gas logistics metadata properties chronologically into independent arrays", function() {
+            globalReceiptsList = [{
+                total: 40.00,
+                receiptType: "Gas Station",
+                transactionDate: "2026-10-20",
+                itemArray: [{ itemNumber: "800599", itemDescription01: "REGULAR GAS", amount: 40.00, unit: 1, fuelUnitQuantity: 10.500, itemUnitPriceAmount: 3.809 }]
+            }];
+
+            calculateGlobalKPIs();
+            const transform = processProductsAndFuel("Gas Station");
+
+            expect(transform.fuelLogs.length).toBe(1);
+            expect(transform.fuelLogs[0].volume).toBe(10.500);
+            expect(transform.fuelLogs[0].cost).toBe(40.00);
+        });
+    });
+</script>
+</body>
+</html>
