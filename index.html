@@ -117,10 +117,66 @@
             .filter-controls { width: 100%; }
             .filter-btn { flex: 1 1 calc(50% - 8px); text-align: center; }
         }
-    </style>
+    
+
+        .top-banner { display: flex; justify-content: flex-end; align-items: center; gap: 28px; padding: 10px 24px; margin: -24px -24px 20px; background-color: rgba(148, 163, 184, 0.12); font-size: 14px; position: relative; z-index: 20; }
+        .menu { position: relative; }
+        .menu-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
+        .menu-link:hover, .menu-link[aria-expanded="true"] { color: var(--text-main); }
+        .menu-dropdown { position: absolute; right: 0; top: calc(100% + 10px); background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); min-width: 260px; white-space: normal; }
+        .menu-dropdown[hidden] { display: none; }
+        .menu-dropdown a { color: var(--accent-blue); text-decoration: underline; word-break: break-all; }
+        .menu-wide { width: 440px; max-width: calc(100vw - 48px); }
+        .menu-dropdown h3 { margin: 12px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+        .menu-dropdown h3:first-child { margin-top: 0; }
+        .menu-dropdown ol { margin: 0; padding-left: 20px; line-height: 1.6; font-size: 13px; }
+        .menu-dropdown code { background: var(--scroll-wrapper-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+        .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); }
+        .tab-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--text-muted); padding: 10px 18px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; margin-bottom: -1px; }
+        .tab-btn:hover { color: var(--text-main); }
+        .tab-btn.active { color: var(--text-main); border-bottom-color: var(--accent-red); }
+        .tab-panel[hidden] { display: none; }
+</style>
 </head>
 <body>
 <div class="container">
+    <nav class="top-banner" aria-label="Project links">
+        <div class="menu">
+            <a href="#" class="menu-link" id="githubMenuLink" aria-haspopup="true" aria-expanded="false">GitHub Repository</a>
+            <div class="menu-dropdown" id="githubMenu" hidden>
+                <a href="https://github.com/priyanka-patil-tech/purchase_profiler" target="_blank" rel="noopener noreferrer">https://github.com/priyanka-patil-tech/purchase_profiler</a>
+            </div>
+        </div>
+        <div class="menu">
+            <a href="#" class="menu-link" id="howToMenuLink" aria-haspopup="true" aria-expanded="false">How to Use</a>
+            <div class="menu-dropdown menu-wide" id="howToMenu" hidden>
+                <h3>1. Get the code</h3>
+                <ol>
+                    <li>Open the <a href="https://github.com/priyanka-patil-tech/purchase_profiler" target="_blank" rel="noopener noreferrer">GitHub repository</a>.</li>
+                    <li>Click <b>Code</b>, then <b>Download ZIP</b>, and extract it (or run <code>git clone</code>).</li>
+                    <li>Open <code>index.html</code> in any modern browser.</li>
+                </ol>
+                <h3>2. Export your Costco data</h3>
+                <ol>
+                    <li>Drag the <b>Drag to Bookmarks</b> link onto your bookmarks bar.</li>
+                    <li>Log in at <code>costco.com</code>, then click the saved bookmark.</li>
+                    <li>A <code>.json</code> file downloads. If the bookmark is blocked, use Method B in the README.</li>
+                </ol>
+                <h3>3. Load it into the dashboard</h3>
+                <ol>
+                    <li>Click <b>Upload Receipts</b> and select one or more exported files.</li>
+                    <li>Duplicates are merged automatically.</li>
+                    <li>Use the filters to switch between In-Warehouse, Online, Gas Station and Car Wash.</li>
+                </ol>
+            </div>
+        </div>
+    </nav>
+
+    <div class="tab-bar" role="tablist">
+        <button type="button" class="tab-btn active" role="tab" id="tab-dashboard" data-tab="dashboard" aria-selected="true">Costco Multi-Account Dashboard</button>
+    </div>
+
+    <div class="tab-panel" id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
     <header>
         <div>
             <h1>🧾 Costco Multi-Account Dashboard</h1>
@@ -133,7 +189,7 @@
             </div>
         </div>
         <div class="btn-group">
-            <label class="btn">📁 Upload JSON Files<input type="file" id="fileInput" multiple accept=".json"></label>
+            <label class="btn">📁 Upload Receipts<input type="file" id="fileInput" multiple accept=".json"></label>
             <button id="exportCsvBtn" disabled class="btn btn-secondary">📊 Export Data to CSV</button>
             <a href="javascript:(async function(){async function fetchWarehouse(e,t){return new Promise((n,r)=>{var a=new XMLHttpRequest;a.responseType='json',a.open('POST','https://ecom-api.costco.com/ebusiness/order/v1/orders/graphql'),a.setRequestHeader('Content-Type','application/json-patch+json'),a.setRequestHeader('Costco.Env','ecom'),a.setRequestHeader('Costco.Service','restOrders'),a.setRequestHeader('Costco-X-Wcs-Clientid',localStorage.getItem('clientID')),a.setRequestHeader('Client-Identifier','481b1aec-aa3b-454b-b81b-48187e28f205'),a.setRequestHeader('Costco-X-Authorization','Bearer '+localStorage.getItem('idToken'));const o={query:'query receiptsWithCounts($startDate: String!, $endDate: String!, $documentType: String!, $documentSubType: String!) { receiptsWithCounts(startDate: $startDate, endDate: $endDate, documentType: $documentType, documentSubType: $documentSubType) { receipts { membershipNumber warehouseName receiptType documentType transactionDateTime transactionDate transactionBarcode transactionType total totalItemCount itemArray { itemNumber itemDescription01 itemDescription02 amount unit fuelUnitQuantity itemUnitPriceAmount } tenderArray { tenderTypeCode tenderDescription amountTender } couponArray { upcnumberCoupon } } } }',variables:{startDate:e,endDate:t,documentType:'all',documentSubType:'all'}};a.onload=()=>200===a.status?n(a.response?.data?.receiptsWithCounts?.receipts||[]):r(a.status),a.onerror=()=>r('Network Error'),a.send(JSON.stringify(o))})}async function fetchOnline(e,t){return new Promise((n,r)=>{var a=new XMLHttpRequest;a.responseType='json',a.open('POST','https://ecom-api.costco.com/ebusiness/order/v1/orders/graphql'),a.setRequestHeader('Content-Type','application/json-patch+json'),a.setRequestHeader('Costco.Env','ecom'),a.setRequestHeader('Costco.Service','restOrders'),a.setRequestHeader('Costco-X-Wcs-Clientid',localStorage.getItem('clientID')),a.setRequestHeader('Client-Identifier','481b1aec-aa3b-454b-b81b-48187e28f205'),a.setRequestHeader('Costco-X-Authorization','Bearer '+localStorage.getItem('idToken'));const o={query:'query getOnlineOrders($startDate:String!, $endDate:String!, $pageNumber:Int , $pageSize:Int, $warehouseNumber:String! ){ getOnlineOrders(startDate:$startDate, endDate:$endDate, pageNumber : $pageNumber, pageSize : $pageSize, warehouseNumber : $warehouseNumber) { bcOrders { orderHeaderId orderPlacedDate: orderedDate orderNumber: sourceOrderNumber orderTotal warehouseNumber status emailAddress orderLineItems { orderLineItemId itemId itemNumber itemTypeId lineNumber itemDescription deliveryDate warehouseNumber status orderStatus parentOrderLineItemId } } } }',variables:{pageNumber:1,pageSize:100,startDate:e,endDate:t,warehouseNumber:'847'}};a.onload=()=>200===a.status?n(a.response?.data?.getOnlineOrders?.[0]?.bcOrders||a.response?.data?.getOnlineOrders?.bcOrders||[]):r(a.status),a.onerror=()=>r('Network Error'),a.send(JSON.stringify(o))})}async function startScrape(){var e=new Date,t=e.toISOString().substring(0,10);var n=e.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'});var r=new Date;r.setFullYear(r.getFullYear()-3);r.setDate(1);var a=r.toISOString().substring(0,10);var o=r.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'});try{console.log('Fetching receipts and online history...');var s=await fetchWarehouse(o,n);var i=await fetchOnline(a,t);if(!s.length&&!i.length){alert('No transactions found. Confirm you are on Costco.com and logged in!');return}var c=s[0]?.membershipNumber||i[0]?.orderNumber||'extract';var d={version:'1.1.0',extractedAt:new Date().toISOString(),warehouseReceipts:s,onlineOrders:i};var u=document.createElement('a');u.download='costco-receipts-'+c+'.json',u.href=window.URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'})),u.click(),alert('Successfully extracted '+s.length+' warehouse receipts and '+i.length+' online orders!')}catch(f){alert('Extraction error. Re-login to Costco.com and try again.'),console.error(f)}}await startScrape();})();" 
                class="btn btn-secondary" 
@@ -248,6 +304,7 @@
             </div>
         </div>
     </section>
+    </div>
 </div>
 
 <script>
@@ -259,6 +316,25 @@
 
     /* Core Interactivity Action Event Listeners */
     document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+    const menus = [['githubMenuLink', 'githubMenu'], ['howToMenuLink', 'howToMenu']];
+    function closeMenus() {
+        menus.forEach(([l, m]) => {
+            document.getElementById(m).hidden = true;
+            document.getElementById(l).setAttribute('aria-expanded', 'false');
+        });
+    }
+    menus.forEach(([l, m]) => {
+        document.getElementById(l).addEventListener('click', (e) => {
+            e.preventDefault(); e.stopPropagation();
+            const menu = document.getElementById(m);
+            const wasOpen = !menu.hidden;
+            closeMenus();
+            if (!wasOpen) { menu.hidden = false; document.getElementById(l).setAttribute('aria-expanded', 'true'); }
+        });
+        document.getElementById(m).addEventListener('click', (e) => e.stopPropagation());
+    });
+    document.addEventListener('click', closeMenus);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenus(); });
     document.getElementById('exportCsvBtn').addEventListener('click', exportToCSV);
 
     /**
