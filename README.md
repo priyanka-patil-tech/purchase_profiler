@@ -24,13 +24,13 @@ Both methods run in your browser and request your transaction history directly f
 #### Method A: The Drag-and-Drop Bookmarklet (Easiest)
 1. Open your local dashboard file (`index.html`) in your browser.
 2. Drag the **🚀 Drag to Bookmarks (Costco Universal Downloader)** button directly up onto your browser's **Bookmarks Bar**.
-3. Navigate your browser tab straight to **[https://costco.com](https://costco.com)** and log completely into your customer account profile.
-4. Once logged in and on the homepage or order status screen, **click the bookmark** you just saved in your toolbar.
+3. Sign in at **[https://costco.com](https://costco.com)** and open **Orders & Purchases**.
+4. **Click the saved bookmark** in your bookmarks bar to download the JSON file.
 5. An alert will display showing how many receipts and online orders were found, and a consolidated `.json` tracking file will automatically save to your computer.
 
 #### Method B: The Native Console Alternative (Fallback)
 If your browser settings block the bookmark link from running, follow these fallback steps instead:
-1. Log into your profile on **[https://costco.com](https://costco.com)**.
+1. Sign in at **[https://costco.com](https://costco.com)** and open **Orders & Purchases**.
 2. Press **`F12`** (or `Cmd + Option + I` on Mac) to open up the browser's Developer Tools panel.
 3. Click over onto the **Console** tab at the top of that side panel.
 4. Copy the raw extraction block code provided inside your dashboard script parameters, paste it into the prompt line, and hit **Enter**.
