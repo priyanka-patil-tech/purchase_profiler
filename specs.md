@@ -1,175 +1,78 @@
-# Spec-Driven Development (SDD) Specification: Costco Dashboard Data Engine & UI
+# Costco Multi-Account Dashboard Specification
 
-## 1. Automated Behavioral Contract (Gherkin / BDD)
+## 1. Product and deployment
 
-```gherkin
-Feature: Multi-Account File Ingestion and Deduplication
-  As a User with multiple Costco memberships
-  I want to upload duplicate, overlapping, or multi-channel receipt JSON exports
-  So that my warehouse and online metrics are consolidated without artificial inflation
+- The application is a static, single-page dashboard served from `index.html`. Hosting serves the page and its assets; receipt analysis runs in the user's browser.
+- The hosted utility is available at [priyanka-patil-tech.github.io/purchase_profiler](https://priyanka-patil-tech.github.io/purchase_profiler).
+- Users can also run the page locally in a modern browser.
+- Transaction files are read and analyzed in the browser. Receipt data is never uploaded to this project's server or an application backend.
+- The Costco export bookmarklet makes requests directly from the user's browser to Costco and downloads the JSON export to the user's device.
+- The page uses Chart.js for the monthly trend visualization and GoatCounter for page-view and anonymous interaction analytics.
 
-  Background:
-    Given an empty global dataset state variable "globalReceiptsList"
+## 2. User interface
 
-  Scenario Outline: Ingesting overlapping files filters out duplicate records
-    When file <File_A> is processed by the ingestion engine
-    And file <File_B> is subsequently processed by the ingestion engine
-    Then the internal array "globalReceiptsList" should contain exactly <Final_Count> records
-    And the DOM element "#kpiTotalSpent" text content should exactly match <Expected_Spent_String>
+- Show a Costco Multi-Account Dashboard title, purchase-channel filters, file selection, CSV export, and a Costco data-export bookmarklet.
+- Place an information button beside the dashboard title. It opens a help panel covering only how to export data from Costco and load the resulting JSON files.
+- Place the GitHub repository link in the page footer.
+- Display KPI cards, a monthly spending chart, ranked product tables, and a fuel-log table.
+- Follow the operating system light/dark color preference and adapt the table layout for narrow screens.
 
-    Examples:
+## 3. Data ingestion and normalization
 
-      | File_A            | File_B            | Final_Count | Expected_Spent_String |
-      | "redmond_q3.json" | "redmond_q3.json" | 34          | "\$1,450.22"            |
-      | "redmond_q3.json" | "kirkland_q3.json"| 52          | "\$2,891.10"            |
+- Accept one or more JSON files through the file input.
+- Support arrays of receipt/order records, the combined `{ "warehouseReceipts": [], "onlineOrders": [] }` export, and the supported GraphQL `data.getOnlineOrders.bcOrders` response envelope.
+- Identify online orders by `orderTotal`; treat other records as warehouse receipts unless their `receiptType` specifies a different channel.
+- Deduplicate records across uploads using the order number or order header ID for online orders, and the transaction barcode or a date/total/membership fallback key for receipts.
+- Normalize dates, totals, account references, channel types, and item lists for dashboard calculations.
+- Apply warehouse coupon lines as offsets to the preceding eligible item when computing product totals.
+- Use an even share of the order total per line when an online order does not provide line-item amounts.
+- Keep imported records in page memory for the current session; do not persist receipt data to an application server.
 
-  Scenario: Sequential Coupon Normalization
-    Given a receipt contains consecutive item lines:
+## 4. Dashboard behavior
 
-      | itemNumber | itemDescription01 | amount | unit |
-      | "112218"   | "HAAGEN DAZS"     | 13.99  | 1    |
-      | "388447"   | "/  112218"       | -3.50  | -1   |
-    When the normalization engine processes the receipt item array
-    Then the containing receipt row item object "amount" value should update to 10.49
-    And product "112218" total spent should be computed as exactly 10.49
-    And product "112218" times bought should be computed as exactly 1
+- Provide filters for All, In-Warehouse, Online, Gas Station, and Car Wash. Filtering updates the chart and insight tables.
+- Calculate summary metrics across the ingested records, including spend, trip counts, item quantity, unique item count, account count, and fuel volume.
+- Render monthly spending, purchase-count, and item-count trends.
+- Rank products by total spend, purchase frequency, and average cost, and show gas fill-ups with date, volume, unit price, total cost, and account reference.
+- Enable CSV export after data has loaded. Export rows should respect the selected channel filter.
+- The Costco bookmarklet exports warehouse receipts and online orders as a JSON file for loading into the dashboard.
 
-  Scenario: Fuel Ingestion Analysis
-    Given a Gas Station receipt containing fuel logging metadata properties:
+## 5. Analytics and privacy
 
-      | itemNumber | itemDescription01 | amount | unit | fuelUnitQuantity | itemUnitPriceAmount |
-      | "800599"   | "REGULAR GAS"     | 59.63  | 1    | 11.469           | 5.199               |
-    When the ingestion processor updates runtime calculations
-    Then the total fuel volume state value should increment by exactly 11.469
-    And DOM element "#kpiTotalFuelVolume" text content should match "11.469 Gal"
-    And a transaction record row should be cleanly appended to "#fuelLogTableBody" containing exactly 5 columns
+- Load the GoatCounter counter script from `gc.zgo.at/count.js` and send page views to the configured GoatCounter `/count` endpoint.
+- Track page interactions as GoatCounter events using the interaction type and a control identifier or element type.
+- Never include receipt contents, uploaded filenames, account identifiers, or input values in analytics events.
+- GoatCounter receives anonymous page-view and interaction analytics; it is a separate external service and does not receive receipt data.
+- If GoatCounter is unavailable while an event occurs, queue the anonymous event until the counter script loads.
+
+## 6. DOM contract
+
+The following IDs are used by dashboard behavior and must remain available:
+
+```text
+#fileInput
+#exportCsvBtn
+#howToMenuLink
+#howToMenu
+#filterAll
+#filterWarehouse
+#filterOnline
+#filterGasStation
+#filterCarWash
+#kpiTotalFuelVolume
+#chartHeading
+#trendChart
+#topSpentTableBody
+#topFreqTableBody
+#topExpensiveTableBody
+#fuelLogTableBody
 ```
 
----
+Table rows must retain their displayed column counts:
 
-## 2. Strict Input/Output Schema Contracts (JSON Schema)
-
-The engine layer must maintain a fully conformant parsing alignment against this absolute structural layout model, supporting wrapped GraphQL response envelopes for both warehouse receipts and online order histories.
-
-```json
-{
-  "\$schema": "https://json-schema.org",
-  "title": "CostcoUnifiedState",
-  "type": "object",
-  "required": ["globalReceiptsList", "currentFilterMode"],
-  "properties": {
-    "currentFilterMode": {
-      "type": "string",
-      "enum": ["all", "In-Warehouse", "Online", "Gas Station", "Car Wash"]
-    },
-    "globalReceiptsList": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "anyOf": [
-          {
-            "required": ["membershipNumber", "warehouseName", "receiptType", "total", "transactionBarcode"],
-            "properties": {
-              "transactionBarcode": { "type": ["string", "null"] },
-              "total": { "type": "number" },
-              "itemArray": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": ["itemNumber", "itemDescription01", "amount", "unit"],
-                  "properties": {
-                    "fuelUnitQuantity": { "type": ["number", "null"] },
-                    "itemUnitPriceAmount": { "type": ["number", "null"] }
-                  }
-                }
-              }
-            }
-          },
-          {
-            "required": ["orderHeaderId", "orderPlacedDate", "orderNumber", "orderTotal", "orderLineItems"],
-            "properties": {
-              "orderNumber": { "type": "string" },
-              "orderTotal": { "type": "number" },
-              "emailAddress": { "type": "string" },
-              "orderLineItems": {
-                "type": "array",
-                "items": {
-                  "type": "object",
-                  "required": ["itemNumber", "itemDescription"],
-                  "properties": {
-                    "itemNumber": { "type": "string" },
-                    "itemDescription": { "type": "string" }
-                  }
-                }
-              }
-            }
-          }
-        ]
-      }
-    }
-  }
-}
-```
-
----
-
-## 3. DOM Structural Invariants (HTML Contract)
-
-Any compilation pass must guarantee that these query indicators remain present, unmutated, and output exact table column dimensions:
-
-```typescript
-interface DashboardDOMSignature {
-  "#fileInput":           HTMLInputElement;
-  "#exportCsvBtn":       HTMLButtonElement;
-  "#chartHeading":       HTMLHeadingElement;
-  "#trendChart":         HTMLCanvasElement;
-  
-  // KPI Metrics Panel Assertions
-  "#kpiTotalFuelVolume": HTMLSpanElement;
-
-  // Table Heading Assertions
-  "#tSpentHeading":      HTMLHeadingElement;
-  "#tFreqHeading":       HTMLHeadingElement;
-  "#tExpHeading":        HTMLHeadingElement;
-  "#tFuelHeading":       HTMLHeadingElement;
-
-  // Table Body Assertions (Strict Column Dimension Signatures)
-  "#topSpentTableBody":  HTMLTableSectionElement; // Must generate exactly 5 <td> children per row line
-  "#topFreqTableBody":   HTMLTableSectionElement; // Must generate exactly 5 <td> children per row line
-  "#topExpensiveTableBody": HTMLTableSectionElement; // Must generate exactly 6 <td> children per row line
-  "#fuelLogTableBody":   HTMLTableSectionElement; // Must generate exactly 5 <td> children per row line
-}
-```
-
----
-
-## 4. UI Invariant Matrix (CSS Tokens & States)
-
-```typescript
-type ActiveTheme = 'light' | 'dark';
-
-interface UIThemeMatrix {
-  backgroundColor: (theme: ActiveTheme) => theme === 'dark' ? '#0f172a' : '#f8fafc';
-  cardBackground:  (theme: ActiveTheme) => theme === 'dark' ? '#1e293b' : '#ffffff';
-  tableHeaderBg:   (theme: ActiveTheme) => theme === 'dark' ? '#151f32' : '#f1f5f9';
-}
-
-interface ResponsiveBreakpointInvariants {
-  viewportWidthLessThan1024px: {
-    ".tables-grid": "grid-template-columns: 1fr";
-    "header":       "flex-direction: column";
-  };
-}
-```
-
----
-
-## 5. Embedded Costco Scraper Bookmarklet Payload
-
-The toolbar bookmark shortcut executes parallel asynchronous network transformations against Costco's secure cloud service gateways (`https://costco.com`). 
-
-It harvests authentication parameters from active `localStorage` tokens to safely scrape data across two separate endpoints:
-1. **Warehouse Receipts Ledger:** Queries the `receiptsWithCounts` node utilizing a three-year calendar fallback window formatted as `MM/DD/YYYY`.
-2. **Online Orders Repository:** Queries the `getOnlineOrders` node schema utilizing sanitized query variables formatted in standard ISO `YYYY-MM-DD` syntax.
-
-If explicit line-item costs are omitted by the online API gateway response loop, the local engine data transformer layer will automatically apply a fallback algorithm that evenly distributes the total transaction value across the order elements to protect top-level math aggregates.
+| Table body | Columns |
+|---|---:|
+| `#topSpentTableBody` | 5 |
+| `#topFreqTableBody` | 5 |
+| `#topExpensiveTableBody` | 6 |
+| `#fuelLogTableBody` | 5 |

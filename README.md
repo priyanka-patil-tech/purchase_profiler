@@ -1,13 +1,25 @@
 # 🧾 Costco Multi-Account Spend Dashboard
 
-An offline-first analytical platform that securely consolidates three years of multi-account Costco receipts, gas fill-ups, and online orders into a unified private dashboard. By automatically normalizing manufacturer coupon offsets and tracking true unit-pricing metrics locally, it uncovers deep spending insights that standard bank statements completely miss.
+A browser-based dashboard for analyzing multi-account Costco receipts, gas fill-ups, and online orders. Receipt files are processed locally in your browser and are never uploaded to this project's server.
+
+**Use the dashboard online:** [priyanka-patil-tech.github.io/purchase_profiler](https://priyanka-patil-tech.github.io/purchase_profiler)
+
+The Costco export bookmarklet makes requests directly from your browser to Costco and saves the resulting JSON file to your device. GoatCounter receives anonymous page-view and interaction analytics only; it does not receive receipt data.
+
+---
+
+## 📊 GoatCounter Analytics
+
+The dashboard records page views and anonymous interaction events with GoatCounter. The current site is configured with `https://purchase-profiler.goatcounter.com/count`; update the `data-goatcounter` endpoint in `index.html` if you deploy with a different GoatCounter site code.
+
+Interaction events identify only the control type or its element ID; uploaded receipt contents, filenames, and input values are not sent.
 
 ---
 
 ## 🚀 Quick Start Guide
 
 ### Step 1: Extract Your Purchase History
-Because modern browsers use strict security layers, you have two ways to safely download your transaction history directly from Costco's servers:
+Both methods run in your browser and request your transaction history directly from Costco. The dashboard does not proxy or receive the export.
 
 #### Method A: The Drag-and-Drop Bookmarklet (Easiest)
 1. Open your local dashboard file (`index.html`) in your browser.
@@ -27,16 +39,16 @@ If your browser settings block the bookmark link from running, follow these fall
 ---
 
 ### Step 2: Load Your Data into the Dashboard
-1. Open your local **`index.html`** file in any standard browser.
-2. Click the **📁 Upload JSON Files** action button at the top of the pane.
+1. Open the [hosted dashboard](https://priyanka-patil-tech.github.io/purchase_profiler) or your local **`index.html`** file in a modern browser.
+2. Click the **📁 Select JSON files** action button at the top of the pane.
 3. Select one or more of the exported `.json` accounting files you generated from Method A or Method B.
-4. The application will instantly ingest, deduplicate, merge, and plot your metrics on charts and datatables!
+4. Your browser will ingest and deduplicate the files locally, then display your metrics in charts and tables.
 
 ---
 
 ## 🛠️ Main Dashboard Features
 
-*   **🔄 Overlap & Duplicate Protection:** Select duplicate files or upload overlapping timeframes safely. The system filters unique keys via transactional hashing (`transactionBarcode` or `orderNumber`) to keep charts completely accurate without artificial balance inflation.
+*   **🔄 Overlap & Duplicate Protection:** Select duplicate files or load overlapping timeframes. The browser filters unique keys (`transactionBarcode` or `orderNumber`) to avoid double-counting.
 *   **🌓 Auto Light/Dark System Sync:** The UI natively follows your active operating system color themes. Shifting window canvas modes instantly recolors card plates, layout borders, and Chart.js trend paths.
 *   **📈 Smart Coupon Normalization:** Intercepts parent item rows and sequential manufacturer deduction lines automatically. Real-time cost offsets subtract balances directly down to true unit price values prior to updating top-level analytical totals.
 *   **🌐 Multi-Channel Segment Filtering:** Seamlessly switch dashboard trendlines, KPI metrics panels, and cost ledger rankings between **In-Warehouse store purchases** and **Costco.com online orders** using integrated interactive ribbon filters.

@@ -94,7 +94,7 @@
         .amber { color: var(--accent-amber); font-weight: 600; }
         .blue { color: var(--accent-blue); font-weight: 600; }
         #fileInput { display: none; }
-        .filter-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+        .filter-controls { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 15px; }
         .filter-btn {
             background-color: var(--scroll-wrapper-bg); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px;
             cursor: pointer; font-weight: bold; color: var(--text-muted); transition: all 0.2s ease; font-size: 13px;
@@ -119,79 +119,57 @@
         }
     
 
-        .top-banner { display: flex; justify-content: flex-end; align-items: center; gap: 28px; padding: 10px 24px; margin: -24px -24px 20px; background-color: rgba(148, 163, 184, 0.12); font-size: 14px; position: relative; z-index: 20; }
+        .dashboard-title { display: flex; align-items: center; gap: 8px; }
         .menu { position: relative; }
-        .menu-link { color: var(--text-muted); text-decoration: underline; cursor: pointer; }
-        .menu-link:hover, .menu-link[aria-expanded="true"] { color: var(--text-main); }
+        .info-button { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; padding: 0; border: 1px solid var(--border-color); border-radius: 50%; background: transparent; color: var(--text-muted); font: inherit; font-size: 16px; cursor: pointer; }
+        .info-button:hover, .info-button[aria-expanded="true"] { color: var(--text-main); border-color: var(--text-muted); }
         .menu-dropdown { position: absolute; right: 0; top: calc(100% + 10px); background-color: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 16px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25); min-width: 260px; white-space: normal; }
         .menu-dropdown[hidden] { display: none; }
-        .menu-dropdown a { color: var(--accent-blue); text-decoration: underline; word-break: break-all; }
         .menu-wide { width: 440px; max-width: calc(100vw - 48px); }
         .menu-dropdown h3 { margin: 12px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
         .menu-dropdown h3:first-child { margin-top: 0; }
         .menu-dropdown ol { margin: 0; padding-left: 20px; line-height: 1.6; font-size: 13px; }
         .menu-dropdown code { background: var(--scroll-wrapper-bg); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
-        .tab-bar { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { background: transparent; border: none; border-bottom: 3px solid transparent; color: var(--text-muted); padding: 10px 18px; font-size: 14px; font-weight: 600; font-family: inherit; cursor: pointer; margin-bottom: -1px; }
-        .tab-btn:hover { color: var(--text-main); }
-        .tab-btn.active { color: var(--text-main); border-bottom-color: var(--accent-red); }
-        .tab-panel[hidden] { display: none; }
+        .page-footer { margin-top: 20px; text-align: right; font-size: 13px; }
+        .page-footer a { color: var(--text-muted); }
+        .page-footer a:hover { color: var(--text-main); }
 </style>
 <script data-goatcounter="https://purchase-profiler.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
 <div class="container">
-    <nav class="top-banner" aria-label="Project links">
-        <div class="menu">
-            <a href="#" class="menu-link" id="githubMenuLink" aria-haspopup="true" aria-expanded="false">GitHub Repository</a>
-            <div class="menu-dropdown" id="githubMenu" hidden>
-                <a href="https://github.com/priyanka-patil-tech/purchase_profiler" target="_blank" rel="noopener noreferrer">https://github.com/priyanka-patil-tech/purchase_profiler</a>
-            </div>
-        </div>
-        <div class="menu">
-            <a href="#" class="menu-link" id="howToMenuLink" aria-haspopup="true" aria-expanded="false">How to Use</a>
-            <div class="menu-dropdown menu-wide" id="howToMenu" hidden>
-                <h3>1. Get the code</h3>
-                <ol>
-                    <li>Open the <a href="https://github.com/priyanka-patil-tech/purchase_profiler" target="_blank" rel="noopener noreferrer">GitHub repository</a>.</li>
-                    <li>Click <b>Code</b>, then <b>Download ZIP</b>, and extract it (or run <code>git clone</code>).</li>
-                    <li>Open <code>index.html</code> in any modern browser.</li>
-                </ol>
-                <h3>2. Export your Costco data</h3>
-                <ol>
-                    <li>Drag the <b>Drag to Bookmarks</b> link onto your bookmarks bar.</li>
-                    <li>Log in at <code>costco.com</code>, then click the saved bookmark.</li>
-                    <li>A <code>.json</code> file downloads. If the bookmark is blocked, use Method B in the README.</li>
-                </ol>
-                <h3>3. Load it into the dashboard</h3>
-                <ol>
-                    <li>Click <b>Upload Receipts</b> and select one or more exported files.</li>
-                    <li>Duplicates are merged automatically.</li>
-                    <li>Use the filters to switch between In-Warehouse, Online, Gas Station and Car Wash.</li>
-                </ol>
-            </div>
-        </div>
-    </nav>
-
-    <div class="tab-bar" role="tablist">
-        <button type="button" class="tab-btn active" role="tab" id="tab-dashboard" data-tab="dashboard" aria-selected="true">Costco Multi-Account Dashboard</button>
-    </div>
-
-    <div class="tab-panel" id="panel-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
     <header>
         <div>
-            <h1>🧾 Costco Multi-Account Dashboard</h1>
-            <div class="filter-controls" id="filterControls" style="display: flex; gap: 8px; margin-top: 15px;">
-                <button class="filter-btn active" onclick="switchFilter(event, 'all')">All</button>
-                <button class="filter-btn" onclick="switchFilter(event, 'In-Warehouse')">In-Warehouse</button>
-                <button class="filter-btn" onclick="switchFilter(event, 'Online')">Online</button>
-                <button class="filter-btn" onclick="switchFilter(event, 'Gas Station')">Gas Station</button>
-                <button class="filter-btn" onclick="switchFilter(event, 'Car Wash')">Car Wash</button>
+            <div class="dashboard-title">
+                <h1>🧾 Costco Multi-Account Dashboard</h1>
+                <div class="menu">
+                    <button type="button" class="info-button" id="howToMenuLink" aria-label="How to use the dashboard" aria-haspopup="true" aria-expanded="false" aria-controls="howToMenu">ⓘ</button>
+                    <div class="menu-dropdown menu-wide" id="howToMenu" role="region" aria-label="How to use the dashboard" hidden>
+                        <p>Receipt files are processed in this browser and are never uploaded to this dashboard. The bookmarklet requests data directly from Costco. Anonymous usage analytics are sent to GoatCounter; they do not include receipt data.</p>
+                        <h3>1. Export your Costco data</h3>
+                        <ol>
+                            <li>Drag the <b>Drag to Bookmarks</b> button below to your bookmarks bar.</li>
+                            <li>Sign in at <code>costco.com</code> and click the saved bookmark. A JSON file will download.</li>
+                        </ol>
+                        <h3>2. Load data into the dashboard</h3>
+                        <ol>
+                            <li>Return to this dashboard, click <b>Select JSON files</b>, and choose the downloaded file.</li>
+                            <li>Select additional JSON files too if you want to load more data.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-controls">
+                <button id="filterAll" class="filter-btn active" onclick="switchFilter(event, 'all')">All</button>
+                <button id="filterWarehouse" class="filter-btn" onclick="switchFilter(event, 'In-Warehouse')">In-Warehouse</button>
+                <button id="filterOnline" class="filter-btn" onclick="switchFilter(event, 'Online')">Online</button>
+                <button id="filterGasStation" class="filter-btn" onclick="switchFilter(event, 'Gas Station')">Gas Station</button>
+                <button id="filterCarWash" class="filter-btn" onclick="switchFilter(event, 'Car Wash')">Car Wash</button>
             </div>
         </div>
         <div class="btn-group">
-            <label class="btn">📁 Upload Receipts<input type="file" id="fileInput" multiple accept=".json"></label>
+            <label class="btn">📁 Select JSON files<input type="file" id="fileInput" multiple accept=".json"></label>
             <button id="exportCsvBtn" disabled class="btn btn-secondary">📊 Export Data to CSV</button>
             <a href="javascript:(async function(){async function fetchWarehouse(e,t){return new Promise((n,r)=>{var a=new XMLHttpRequest;a.responseType='json',a.open('POST','https://ecom-api.costco.com/ebusiness/order/v1/orders/graphql'),a.setRequestHeader('Content-Type','application/json-patch+json'),a.setRequestHeader('Costco.Env','ecom'),a.setRequestHeader('Costco.Service','restOrders'),a.setRequestHeader('Costco-X-Wcs-Clientid',localStorage.getItem('clientID')),a.setRequestHeader('Client-Identifier','481b1aec-aa3b-454b-b81b-48187e28f205'),a.setRequestHeader('Costco-X-Authorization','Bearer '+localStorage.getItem('idToken'));const o={query:'query receiptsWithCounts($startDate: String!, $endDate: String!, $documentType: String!, $documentSubType: String!) { receiptsWithCounts(startDate: $startDate, endDate: $endDate, documentType: $documentType, documentSubType: $documentSubType) { receipts { membershipNumber warehouseName receiptType documentType transactionDateTime transactionDate transactionBarcode transactionType total totalItemCount itemArray { itemNumber itemDescription01 itemDescription02 amount unit fuelUnitQuantity itemUnitPriceAmount } tenderArray { tenderTypeCode tenderDescription amountTender } couponArray { upcnumberCoupon } } } }',variables:{startDate:e,endDate:t,documentType:'all',documentSubType:'all'}};a.onload=()=>200===a.status?n(a.response?.data?.receiptsWithCounts?.receipts||[]):r(a.status),a.onerror=()=>r('Network Error'),a.send(JSON.stringify(o))})}async function fetchOnline(e,t){return new Promise((n,r)=>{var a=new XMLHttpRequest;a.responseType='json',a.open('POST','https://ecom-api.costco.com/ebusiness/order/v1/orders/graphql'),a.setRequestHeader('Content-Type','application/json-patch+json'),a.setRequestHeader('Costco.Env','ecom'),a.setRequestHeader('Costco.Service','restOrders'),a.setRequestHeader('Costco-X-Wcs-Clientid',localStorage.getItem('clientID')),a.setRequestHeader('Client-Identifier','481b1aec-aa3b-454b-b81b-48187e28f205'),a.setRequestHeader('Costco-X-Authorization','Bearer '+localStorage.getItem('idToken'));const o={query:'query getOnlineOrders($startDate:String!, $endDate:String!, $pageNumber:Int , $pageSize:Int, $warehouseNumber:String! ){ getOnlineOrders(startDate:$startDate, endDate:$endDate, pageNumber : $pageNumber, pageSize : $pageSize, warehouseNumber : $warehouseNumber) { bcOrders { orderHeaderId orderPlacedDate: orderedDate orderNumber: sourceOrderNumber orderTotal warehouseNumber status emailAddress orderLineItems { orderLineItemId itemId itemNumber itemTypeId lineNumber itemDescription deliveryDate warehouseNumber status orderStatus parentOrderLineItemId } } } }',variables:{pageNumber:1,pageSize:100,startDate:e,endDate:t,warehouseNumber:'847'}};a.onload=()=>200===a.status?n(a.response?.data?.getOnlineOrders?.[0]?.bcOrders||a.response?.data?.getOnlineOrders?.bcOrders||[]):r(a.status),a.onerror=()=>r('Network Error'),a.send(JSON.stringify(o))})}async function startScrape(){var e=new Date,t=e.toISOString().substring(0,10);var n=e.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'});var r=new Date;r.setFullYear(r.getFullYear()-3);r.setDate(1);var a=r.toISOString().substring(0,10);var o=r.toLocaleDateString('en-US',{year:'numeric',month:'2-digit',day:'2-digit'});try{console.log('Fetching receipts and online history...');var s=await fetchWarehouse(o,n);var i=await fetchOnline(a,t);if(!s.length&&!i.length){alert('No transactions found. Confirm you are on Costco.com and logged in!');return}var c=s[0]?.membershipNumber||i[0]?.orderNumber||'extract';var d={version:'1.1.0',extractedAt:new Date().toISOString(),warehouseReceipts:s,onlineOrders:i};var u=document.createElement('a');u.download='costco-receipts-'+c+'.json',u.href=window.URL.createObjectURL(new Blob([JSON.stringify(d,null,2)],{type:'application/json'})),u.click(),alert('Successfully extracted '+s.length+' warehouse receipts and '+i.length+' online orders!')}catch(f){alert('Extraction error. Re-login to Costco.com and try again.'),console.error(f)}}await startScrape();})();" 
                class="btn btn-secondary" 
@@ -218,7 +196,7 @@
             <p class="kpi-title">Total Trips / Orders</p>
             <div class="kpi-value amber" id="kpiTotalTrips">0</div>
             <div class="kpi-details">
-                <div class="kpi-row"><span>Warehouse Visits:</span> <span id="kpiWhTrips">0</span></div>
+                <div class="kpi-row"><span>Warehouse:</span> <span id="kpiWhTrips">0</span></div>
                 <div class="kpi-row"><span>Online:</span> <span id="kpiOnlineTrips">0</span></div>
                 <div class="kpi-row"><span>Gas Stations:</span> <span id="kpiGasTrips">0</span></div>
                 <div class="kpi-row"><span>Car Washes:</span> <span id="kpiCwTrips">0</span></div>
@@ -229,7 +207,7 @@
             <div class="kpi-value blue" id="kpiTotalItems">0</div>
             <div class="kpi-details">
                 <div class="kpi-row"><span>Total Item Quantity:</span> <span id="kpiItemQty">0</span></div>
-                <div class="kpi-row"><span>Unique Item IDs:</span> <span id="kpiUniqueItems">0</span></div>
+                <div class="kpi-row"><span>Unique Items:</span> <span id="kpiUniqueItems">0</span></div>
                 <div class="kpi-row"><span>Total Fuel Volume:</span> <span id="kpiTotalFuelVolume">0.00 Gal</span></div>
             </div>
         </div>
@@ -253,7 +231,7 @@
             <div class="scroll-wrapper">
                 <table>
                     <thead><tr><th>Item #</th><th>Description</th><th class="text-center">Times Bought</th><th class="text-right">Total Spent</th><th>Accounts</th></tr></thead>
-                    <tbody id="topSpentTableBody"><tr><td colspan="5" class="text-center" style="color: var(--text-muted); font-style: italic;">Upload data to calculate metrics.</td></tr></tbody>
+                    <tbody id="topSpentTableBody"><tr><td colspan="5" class="text-center" style="color: var(--text-muted); font-style: italic;">Select one or more JSON files to view your spending insights.</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -262,7 +240,7 @@
             <div class="scroll-wrapper">
                 <table>
                     <thead><tr><th>Item #</th><th>Description</th><th class="text-center">Times Bought</th><th class="text-right">Total Spent</th><th>Accounts</th></tr></thead>
-                    <tbody id="topFreqTableBody"><tr><td colspan="5" class="text-center" style="color: var(--text-muted); font-style: italic;">Upload data to calculate metrics.</td></tr></tbody>
+                    <tbody id="topFreqTableBody"><tr><td colspan="5" class="text-center" style="color: var(--text-muted); font-style: italic;">Select one or more JSON files to view your spending insights.</td></tr></tbody>
                 </table>
             </div>
         </div>
@@ -281,7 +259,7 @@
                         </tr>
                     </thead>
                     <tbody id="topExpensiveTableBody">
-                        <tr><td colspan="6" class="text-center" style="color: var(--text-muted); font-style: italic;">Upload data to calculate metrics.</td></tr>
+                        <tr><td colspan="6" class="text-center" style="color: var(--text-muted); font-style: italic;">Select one or more JSON files to view your spending insights.</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -300,13 +278,15 @@
                         </tr>
                     </thead>
                     <tbody id="fuelLogTableBody">
-                        <tr><td colspan="5" class="text-center" style="color: var(--text-muted); font-style: italic;">Upload data to calculate metrics.</td></tr>
+                        <tr><td colspan="5" class="text-center" style="color: var(--text-muted); font-style: italic;">Select one or more JSON files to view your spending insights.</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </section>
-    </div>
+    <footer class="page-footer">
+        <a href="https://github.com/priyanka-patil-tech/purchase_profiler" target="_blank" rel="noopener noreferrer">GitHub Repository</a>
+    </footer>
 </div>
 
 <script>
@@ -315,10 +295,47 @@
     let currentFilterMode = 'all'; 
     let trendChartInstance = null;
     let globalValidProducts = new Set();
+    const pendingGoatCounterEvents = [];
+
+    function trackGoatCounterInteraction(type, target) {
+        const eventName = `${type}/${target}`;
+        const eventData = { path: `event/${eventName}`, title: eventName, event: true };
+        if (window.goatcounter && typeof window.goatcounter.count === 'function') {
+            window.goatcounter.count(eventData);
+        } else {
+            pendingGoatCounterEvents.push(eventData);
+        }
+    }
+
+    const goatCounterScript = document.querySelector('script[data-goatcounter]');
+    goatCounterScript.addEventListener('load', () => {
+        while (pendingGoatCounterEvents.length) {
+            window.goatcounter.count(pendingGoatCounterEvents.shift());
+        }
+    });
+
+    document.addEventListener('click', (event) => {
+        const target = event.target instanceof Element
+            ? event.target.closest('a, button, input, label, select, textarea, [role], canvas')
+            : null;
+        if (target) {
+            const name = target.id || target.dataset.analytics || target.getAttribute('role') || target.tagName.toLowerCase();
+            trackGoatCounterInteraction('click', name);
+        }
+    }, true);
+    document.addEventListener('change', (event) => {
+        const target = event.target;
+        if (target instanceof HTMLInputElement || target instanceof HTMLSelectElement || target instanceof HTMLTextAreaElement) {
+            trackGoatCounterInteraction('change', target.id || target.dataset.analytics || target.tagName.toLowerCase());
+        }
+    }, true);
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') trackGoatCounterInteraction('keydown', 'escape');
+    }, true);
 
     /* Core Interactivity Action Event Listeners */
     document.getElementById('fileInput').addEventListener('change', handleFileUpload);
-    const menus = [['githubMenuLink', 'githubMenu'], ['howToMenuLink', 'howToMenu']];
+    const menus = [['howToMenuLink', 'howToMenu']];
     function closeMenus() {
         menus.forEach(([l, m]) => {
             document.getElementById(m).hidden = true;
@@ -654,7 +671,7 @@
                 datasets: [
                     { label: 'Monthly Spend ($)', data: spendData, borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.05)', borderWidth: 3, tension: 0.25, fill: true, yAxisID: 'ySpent' },
                     { label: 'Purchases / Month', data: tripsData, borderColor: '#f59e0b', backgroundColor: 'transparent', borderWidth: 2.5, tension: 0.15, yAxisID: 'yCounts' },
-                    { label: 'Items Loaded / Month', data: itemsData, borderColor: '#3b82f6', backgroundColor: 'transparent', borderWidth: 2.5, tension: 0.2, yAxisID: 'yCounts' }
+                    { label: 'Items / Month', data: itemsData, borderColor: '#3b82f6', backgroundColor: 'transparent', borderWidth: 2.5, tension: 0.2, yAxisID: 'yCounts' }
                 ]
             },
             options: {
